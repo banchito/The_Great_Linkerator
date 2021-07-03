@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 // This is the Web Server
 const express = require('express');
 const server = express();
@@ -7,8 +9,7 @@ const morgan = require('morgan');
 server.use(morgan('dev'));
 
 // handle application/json requests
-const bodyParser = require('body-parser');
-server.use(bodyParser.json());
+server.use(express.json());
 
 // here's our static files
 const path = require('path');
@@ -23,7 +24,7 @@ server.use((req, res, next) => {
 });
 
 // bring in the DB connection
-const { client } = require('./db');
+const client  = require('./db/client');
 
 // connect to the server
 const PORT = process.env.PORT || 5000;
