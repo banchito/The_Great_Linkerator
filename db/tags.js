@@ -28,6 +28,16 @@ const getAllTags = async() => {
     }
 }
 
-module.exports = {
-    createTag, getAllTags
+const getTagById = async(id) => {
+    try {
+        const {rows: [tag]} = await client.query(`
+        SELECT * FROM tags WHERE id=$1;
+        `, [id]);
+        return tag;
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
 }
+
+module.exports = { createTag, getAllTags, getTagById}

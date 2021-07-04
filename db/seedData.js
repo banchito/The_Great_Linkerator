@@ -1,5 +1,5 @@
 const client = require('./client');
-const {createLink, createTag, createUser, getLinksWithoutTags, getAllTags, addTagToLink, getAllUsers} = require('.')
+const {createLink, createTag, createUser, getLinksWithoutTags, getAllTags, addTagToLink, getAllUsers, getLinksBytag, destroyLink, getLinkTagsById } = require("../db");
 
 async function dropTables() {
   try {
@@ -104,28 +104,24 @@ async function createInitialLinks() {
       {
         url: 'https://www.fullstackacademy.com/',
         creatorId: 2,
-        // dateShared: date,
         comment: "To learn",
         clickCount: 0,
       },
       {
         url: "https://github.com/banchito",
         creatorId: 1,
-        // dateShared: date,
         comment: "My Github",
         clickCount: 0,
       },
       {
         url: "https://www.google.com/",
         creatorId: 2,
-        // dateShared: date,
         comment: "Best search engine",
         clickCount: 0,
       },
       {
         url: "https://twitter.com/",
         creatorId: 1,
-        // dateShared: date,
         comment: "To stay informed",
         clickCount: 0,
       }, 
@@ -161,7 +157,7 @@ async function createInitialLinkTags(){
       },
       {
         linkId: twitter.id,
-        tagId: tag3.id
+        tagId: tag1.id
       },
       {
         linkId: twitter.id,
@@ -171,11 +167,36 @@ async function createInitialLinkTags(){
     const linkTags = await Promise.all(linkTagsToCreate.map(addTagToLink))
     console.log("link_tags created: ", linkTags);
     console.log("Finished creating link_tags!");
+
+    const lT = await getLinksBytag(tag1)
+    console.log("linkTags(1)",lT );
+
+    const erasedLink = await destroyLink(twitter.id)
+    console.log("link destroyed", erasedLink);
+
+    const test = await client.query(`
+      select * from links;
+    `);
+    console.log("test",test);
+    const test2 = await client.query(`
+      select * from link_tags;
+    `)
+    console.log("test",test2);
+
+    const l_t = await getLinkTagsById(google.id)
+    console.log("link_tags by ID:", l_t)
+
   } catch (error) {
     console.error("Error creating link_tags!!");
     throw error;
   }
 }
+
+
+
+ 
+ 
+ 
 
 async function rebuildDB() {
   try {
@@ -186,6 +207,7 @@ async function rebuildDB() {
     await createInitialTags();
     await createInitialLinks();
     await createInitialLinkTags();
+    
   } catch (error) {
     console.log("Error during rebuildDB");
     throw error;

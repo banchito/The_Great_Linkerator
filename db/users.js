@@ -1,27 +1,81 @@
 const client = require("./client");
+const {hash, compare} = require("./hash")
 
-async function createUser({ username, password }) {
+const createUser = async ({ username, password }) =>{
+  const hashedPassword = hash(password);
+
     try {
-      const { rows } = await client.query(`
+      const { rows:[user] } = await client.query(`
         INSERT INTO users(username, password) 
         VALUES($1, $2) 
         ON CONFLICT (username) DO NOTHING 
         RETURNING *;
-      `, [username, password]);
+      `, [username, hashedPassword]);
   
-      return rows;
+      return user;
     } catch (error) {
-      throw error;
+      console.error(error);
+      return false;
     }
-  }
-
-async function getAllUsers() {
-    const { rows } = await client.query(`SELECT id, username FROM users;`);
-  
-    return rows;
-  }
-  
-
-module.exports = {
-    createUser, getAllUsers
 }
+
+const getUser = async ({ username, password }) => {
+  if(!username || !password) return
+  
+  try {
+    const { rows: [user]} = await client.query(
+      ` SELECT id, username, password FROM users WHERE username=$1 LIMIT 1;`,
+      [username]
+    );
+
+    if (!user) return false;
+
+    const passwordMatch = compare(password, user.password);
+    if (passwordMatch) {
+      delete user.password;
+      return user;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const getAllUsers = async() => {
+    const { rows } = await client.query(`SELECT id, username FROM users;`);
+    return rows;
+}
+
+const getUserByUsername = async(username) => {
+  try{
+      const {rows: [user]} = await client.query(`
+          SELECT id, username FROM users WHERE username=$1`,[username]);
+          return user
+  }catch(error){
+    console.error(error);
+    return false;
+  
+  }
+}
+
+const getUserById = async (id) => {
+try {
+  const {
+    rows: [user],
+  } = await client.query(
+    `
+          SELECT id, username FROM users WHERE id=$1;
+      `,
+    [id]
+  );
+  return user;
+} catch (error) {
+  console.error(error);
+  throw error;
+}
+};
+
+
+module.exports = { createUser, getAllUsers, getUser, getUserByUsername, getUserById}

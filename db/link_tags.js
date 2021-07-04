@@ -5,6 +5,7 @@ const addTagToLink = async({linkId, tagId}) => {
         const {rows: [link_tag]} = await client.query(`
             INSERT INTO link_tags ("linkId", "tagId")
             VALUES($1, $2)
+            ON CONFLICT ("linkId","tagId") DO NOTHING
             RETURNING *;
         `,[linkId,tagId])
         return link_tag;
@@ -14,6 +15,21 @@ const addTagToLink = async({linkId, tagId}) => {
     }
 }
 
-module.exports = {
-    addTagToLink
+const getLinkTagsById = async(id)=>{
+    try {
+        const{rows:[link_tags]} = await client.query(`
+            SELECT lt.id, lt."tagId", lt."linkId", l.url, l."creatorId", l."dateShared", 
+            l.comment, l."clickCount", t."tagName", u.username, u.id AS "userId"
+            FROM link_tags lt
+            JOIN tags  t    ON lt."tagId"      = t.id
+            JOIN links l    ON lt."linkId"     = l.id
+            JOIN users u    ON l."creatorId"   = u.id
+            WHERE lt.id=$1`,[id]);
+            return link_tags;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }
+
+module.exports = {addTagToLink, getLinkTagsById}
