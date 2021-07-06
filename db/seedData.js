@@ -1,5 +1,5 @@
 const client = require('./client');
-const {createLink, createTag, createUser, getLinksWithoutTags, getAllTags, addTagToLink, getAllUsers, getLinksBytag, destroyLink, getLinkTagsById } = require("../db");
+const {createLink, createTag, createUser, getLinksWithoutTags, getAllTags, addTagToLink, getAllUsers, getAllLinksByUser, getLinksBytag, destroyLink, getLinkTagsById, getLinkTagsBylink, destroyLinkTag, getLinkById } = require("../db");
 
 async function dropTables() {
   try {
@@ -183,7 +183,7 @@ async function createInitialLinkTags(){
     `)
     console.log("test",test2);
 
-    const l_t = await getLinkTagsById(google.id)
+    const l_t = await getAllLinksByUser({id:1, username:'albert'})
     console.log("link_tags by ID:", l_t)
 
   } catch (error) {

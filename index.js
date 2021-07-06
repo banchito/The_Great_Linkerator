@@ -3,7 +3,7 @@ const express     = require('express');
 const morgan      = require('morgan');
 const cors        = require('cors');
 const client      = require('./db/client');
-//const apiRouter   = require('./api')
+const apiRouter   = require('./api')
 
 const PORT    = (process.env.PORT || 5000);
 const server  = express();
@@ -17,7 +17,7 @@ server.use((req, res, next)=>{
   next()
 })
 
-//server.use('/api', apiRouter);
+server.use('/api', apiRouter);
 
 const startServer = async () => {
   await client.connect();

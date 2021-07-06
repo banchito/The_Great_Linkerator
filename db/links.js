@@ -9,7 +9,7 @@ const createLink = async ({url, creatorId, comment, clickCount}) => {
         ON CONFLICT (url) DO NOTHING
         RETURNING *;
         `, [url, creatorId, comment, clickCount]);
-        return link
+        return link;
     } catch (error) {
         console.log(error)
         throw error

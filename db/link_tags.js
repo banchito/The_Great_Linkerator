@@ -15,6 +15,18 @@ const addTagToLink = async({linkId, tagId}) => {
     }
 }
 
+const getLinkTagsBylink = async(id)=> {
+    try {
+        const { rows} = await client.query(`
+            SELECT * FROM link_tags WHERE "linkId" = $1;
+        `,[id])
+        return rows;
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
 const getLinkTagsById = async(id)=>{
     try {
         const{rows:[link_tags]} = await client.query(`
@@ -32,4 +44,18 @@ const getLinkTagsById = async(id)=>{
     }
 }
 
-module.exports = {addTagToLink, getLinkTagsById}
+const destroyLinkTag = async(id) =>{
+    try {
+        const {rows} = await client.query(`
+        DELETE FROM link_tags
+        WHERE id = $1
+        RETURNING *;
+        `,[id])
+        return rows;
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+module.exports = {addTagToLink, getLinkTagsById, getLinkTagsBylink, destroyLinkTag}

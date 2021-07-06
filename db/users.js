@@ -50,9 +50,9 @@ const getAllUsers = async() => {
 
 const getUserByUsername = async(username) => {
   try{
-      const {rows: [user]} = await client.query(`
+      const {rows} = await client.query(`
           SELECT id, username FROM users WHERE username=$1`,[username]);
-          return user
+          return rows[0];
   }catch(error){
     console.error(error);
     return false;
