@@ -1,6 +1,6 @@
 const linksRouter       = require('express').Router();
 const { verifyToken }   = require('../utils');   
-const {getAllLinks, createLink, updateLink, getLinkById} = require("../db");
+const {getAllLinks, createLink, updateLink, getLinkById, destroyLink, getAllLinksAndTheirTags, addTagToLink} = require("../db");
 
 linksRouter.use((req, res, next)=>{
     console.log("A request is being made to /links");
@@ -9,7 +9,7 @@ linksRouter.use((req, res, next)=>{
 
 linksRouter.get("/", async(req ,res ,next) => {
     try{
-        const links = await getAllLinks();
+        const links = await getAllLinksAndTheirTags();
         res.send(links)
     }catch(error){
         next(error)
@@ -43,7 +43,7 @@ linksRouter.patch("/:linkId", async(req, res, next) => {
         if (!headersAuth) return res.status(403).send({ message: `Please login` });
 
         const verifiedToken  = verifyToken(headersAuth);
-        const linkToUpdate   = await getLinkById(routineId)
+        const linkToUpdate   = await getLinkById(linkId)
         
         if(!linkToUpdate) res.status(403).send({ message: `Link does not exist` });
 
@@ -55,6 +55,39 @@ linksRouter.patch("/:linkId", async(req, res, next) => {
         next(error)
     }
 })
+
+linksRouter.delete("/:linkId", async(req, res, next) => {
+    const {linkId}  = req.params;
+    const headersAuth    = req.headers.authorization;
+    console.log(linkId);
+    try{
+        if (!headersAuth) return res.status(403).send({ message: `Please login` });
+       
+        const verifiedToken      = verifyToken(headersAuth);
+        const linkToDelete       = await getLinkById(linkId);
+
+        verifiedToken.id === linkToDelete.creatorId
+        ? res.send(await destroyLink(linkToDelete.id))
+        : res.status(403).send({ message: `Link creator not logged in` });
+            
+        
+    }catch(error){
+        next(error)
+    }
+})
+
+linksRouter.post("/:linkId/tags", async(req, res, next) => {
+    const {linkId} = req.params;
+    const {tagId}  = req.body;
+    try {
+        const link_tag = await addTagToLink({linkId, tagId})
+        console.log(link_tag);
+        res.send(link_tag);
+    } catch (error) {
+        next(error)
+    }
+})
+
 
 
 module.exports = linksRouter;

@@ -1,14 +1,15 @@
 const client = require("./client");
 
 const addTagToLink = async({linkId, tagId}) => {
+    console.log(linkId, tagId);
     try {
-        const {rows: [link_tag]} = await client.query(`
+        const {rows} = await client.query(`
             INSERT INTO link_tags ("linkId", "tagId")
             VALUES($1, $2)
             ON CONFLICT ("linkId","tagId") DO NOTHING
             RETURNING *;
         `,[linkId,tagId])
-        return link_tag;
+        return rows;
     } catch (error) {
         console.error(error)
         throw error

@@ -81,11 +81,10 @@ const updateLink = async(fields = {}) =>{
 
 const destroyLink = async(id) => {
     try {
-        await client.query(`
+         await client.query(`
             DELETE FROM links
             WHERE id = $1;
-        `,[id])
-
+        `,[id]);
     } catch (error) {
         console.error(error)
         throw error     
@@ -139,6 +138,7 @@ const getAllLinksByUser = async({id, username})=> {
     }
 }
 
+
 const getAllLinksAndTheirTags = async()=> {
 
     try {
@@ -148,8 +148,8 @@ const getAllLinksAndTheirTags = async()=> {
         JOIN tags t ON lt."tagId"       = t.id
         JOIN links l ON lt."linkId"     = l.id
         JOIN users u ON l."creatorId"   = u.id
-        WHERE l.id IS NOT NULL;
-        `,);
+        WHERE l.id IS NOT NULL;`,);
+
         rows.forEach((row)=>{
             row.tags = [{id: row.tagId, tagName: row.tagName}]
             delete row.tagId;

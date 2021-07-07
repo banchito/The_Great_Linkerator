@@ -1,6 +1,6 @@
 const client = require("./client")
 
-const createTag = async({tagName}) => {
+const createTag = async(tagName) => {
     console.log(tagName);
     try {
         const {rows} = await client.query(`
@@ -40,4 +40,22 @@ const getTagById = async(id) => {
     }
 }
 
-module.exports = { createTag, getAllTags, getTagById}
+const getTagsBYlink = async(linkId)=> {
+    try {
+        const {rows} = await client.query( `
+        SELECT l.id, l.url, t.id as "tagId", t."tagName"
+        FROM link_tags lt
+        JOIN tags t ON lt."tagId"       = t.id
+        JOIN links l ON lt."linkId"     = l.id
+        JOIN users u ON l."creatorId"   = u.id
+        WHERE l.id = $1;
+        `,[linkId])
+        console.log(rows)
+        return rows;
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+module.exports = { createTag, getAllTags, getTagById, getTagsBYlink}
