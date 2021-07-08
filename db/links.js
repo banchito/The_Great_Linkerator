@@ -138,28 +138,51 @@ const getAllLinksByUser = async({id, username})=> {
     }
 }
 
-
-const getAllLinksAndTheirTags = async()=> {
-
+const getTagsforLink = async(linkId) =>{
     try {
         const {rows} = await client.query(`
-        SELECT l.id, l.url, l."creatorId", l."dateShared", l."clickCount", t.id as "tagId", t."tagName", u.username AS "creatorName", u.id
+        SELECT t.id, t."tagName"
         FROM link_tags lt
         JOIN tags t ON lt."tagId"       = t.id
         JOIN links l ON lt."linkId"     = l.id
         JOIN users u ON l."creatorId"   = u.id
-        WHERE l.id IS NOT NULL;`,);
+        WHERE l.id = $1;`,[linkId]);
 
-        rows.forEach((row)=>{
-            row.tags = [{id: row.tagId, tagName: row.tagName}]
-            delete row.tagId;
-            delete row.tagName
-        });
         return rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+
+
+const getAllLinksAndTheirTags = async()=> {
+
+    try {
+        const links = await getAllLinks();
+       
+        const linksWithTags = Promise.all(links.map(async(link)=>{
+            const tags = await getTagsforLink(link.id)
+            return {
+                ...link,
+                tags,
+
+            }
+        }))
+
+        // for(let i = 0; i<links.length; i++){
+            // const tags = await getTagsforLink(links[i].id)
+            // linksWithTags.push({
+                // ...links[i],
+                // tags,
+            // })
+        // }
+        return linksWithTags
     } catch (error) {
         console.error(error)
         throw error
     }
 }
+
 
  module.exports = { createLink, getLinksWithoutTags, getLinkById, getLinksBytag, getAllLinksByUser, updateLink, destroyLink, getAllLinks, getAllLinksAndTheirTags }

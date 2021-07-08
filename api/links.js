@@ -19,7 +19,6 @@ linksRouter.get("/", async(req ,res ,next) => {
 linksRouter.post("/", async(req, res, next) => {
     const {url, comment} = req.body;
     const headersAuth  = req.headers.authorization;
-    console.log("api",headersAuth);
     try{
 
     if(!headersAuth) return res.status(403).send({ message: `Please login` });
