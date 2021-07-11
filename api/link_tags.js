@@ -1,5 +1,4 @@
 const linkTagsRouter  = require('express').Router();
-const { verifyToken }   = require('../utils');   
 const { destroyLinkTag} = require("../db");
 
 linkTagsRouter.use((req, res, next) => {
@@ -9,16 +8,14 @@ linkTagsRouter.use((req, res, next) => {
 
 linkTagsRouter.delete("/:linkTagId", async (req, res, next) => {
     const { linkTagId } = req.params;
-    const headersAuth = req.headers.authorization;
     try {
-      if (headersAuth) {
-        const verifiedToken = verifyToken(headersAuth);
+      
         const linkTagToDelete = await getLinkTagsById(linkTagId);
 
-        (verifiedToken.id === linkTagToDelete.creatorId)
+        linkTagToDelete
         ? res.send(await destroyLinkTag(linkTagToDelete.id))
-        : res.status(403).send({ message: `Link creator not logged in` });
-      }
+        : res.status(403).send({ message: `Link Tag not found` });
+      
     } catch (error) {
         next(error);
     }

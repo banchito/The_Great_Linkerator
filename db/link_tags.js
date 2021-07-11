@@ -31,12 +31,11 @@ const getLinkTagsBylink = async(id)=> {
 const getLinkTagsById = async(id)=>{
     try {
         const{rows:[link_tags]} = await client.query(`
-            SELECT lt.id, lt."tagId", lt."linkId", l.url, l."creatorId", l."dateShared", 
-            l.comment, l."clickCount", t."tagName", u.username, u.id AS "userId"
+            SELECT lt.id, lt."tagId", lt."linkId", l.url, l."dateShared", 
+            l.comment, l."clickCount", t."tagName"
             FROM link_tags lt
             JOIN tags  t    ON lt."tagId"      = t.id
             JOIN links l    ON lt."linkId"     = l.id
-            JOIN users u    ON l."creatorId"   = u.id
             WHERE lt.id=$1`,[id]);
             return link_tags;
     } catch (error) {

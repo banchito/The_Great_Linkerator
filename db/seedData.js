@@ -1,5 +1,5 @@
 const client = require('./client');
-const {createLink, createTag, createUser, getLinksWithoutTags, getAllTags, addTagToLink, getAllUsers, getAllLinksByUser, getLinksBytag, destroyLink, getLinkTagsById, getLinkTagsBylink, destroyLinkTag, getLinkById } = require("../db");
+const {createLink, createTag, getLinksWithoutTags, getAllTags, addTagToLink, getAllLinksByUser, getLinksBytag, destroyLink } = require("../db");
 
 async function dropTables() {
   try {
@@ -8,7 +8,6 @@ async function dropTables() {
       DROP TABLE IF EXISTS link_tags;
       DROP TABLE IF EXISTS links;
       DROP TABLE IF EXISTS tags;
-      DROP TABLE IF EXISTS users;
     `);
     console.log("Finishing Dropping All Tables...");
   } catch (error) {
@@ -22,12 +21,6 @@ async function createTables() {
     console.log("Starting to build tables...");
     await client.query(`
 
-    CREATE TABLE users(
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL
-    );
-
     CREATE TABLE tags(
       id SERIAL PRIMARY KEY,
       "tagName" VARCHAR(255) UNIQUE NOT NULL
@@ -36,11 +29,9 @@ async function createTables() {
     CREATE TABLE links(
       id SERIAL PRIMARY KEY,
       url TEXT UNIQUE NOT NULL,
-      "creatorId" INTEGER,
       "dateShared" DATE NOT NULL DEFAULT CURRENT_DATE,
       comment TEXT,
-      "clickCount" INTEGER NOT NULL,
-      FOREIGN KEY ("creatorId") REFERENCES users(id)
+      "clickCount" INTEGER NOT NULL
     );
     
     CREATE TABLE  link_tags(
@@ -58,34 +49,19 @@ async function createTables() {
   }
 }
 
-async function createInitialUsers() {
-  console.log("Starting to create users...");
-  try {
-
-    await createUser({ username: 'albert', password: 'bertie99' });
-    await createUser({ username: 'sandra', password: '2sandy4me' });
-    await createUser({ username: 'glamgal', password: 'soglam' });
-    
-    const users = await getAllUsers()
-      console.log("Finished creating users!", users);
-  } catch (error) {
-    console.error("Error creating users!");
-    throw error;
-  }
-}
 
 
 async function createInitialTags() {
   try {
     console.log("Starting to create tags...");
     const tagsToCreate = [
-      {tagName: "social"},
-      {tagName: "sport"},
-      {tagName: "search"},
-      {tagName: "knowledge"},
-      {tagName: "tool"},
-      {tagName: "personal"},
-      {tagName: "hobbie"},
+       "social",
+       "sport",
+       "search",
+       "knowledge",
+       "tool",
+       "personal",
+       "hobbie",
     ];
     const tags = await Promise.all(tagsToCreate.map(createTag));
     console.log("tags created:", tags);
@@ -103,25 +79,21 @@ async function createInitialLinks() {
     const linksToCreate = [
       {
         url: 'https://www.fullstackacademy.com/',
-        creatorId: 2,
         comment: "To learn",
         clickCount: 0,
       },
       {
         url: "https://github.com/banchito",
-        creatorId: 1,
         comment: "My Github",
         clickCount: 0,
       },
       {
         url: "https://www.google.com/",
-        creatorId: 2,
         comment: "Best search engine",
         clickCount: 0,
       },
       {
         url: "https://twitter.com/",
-        creatorId: 1,
         comment: "To stay informed",
         clickCount: 0,
       }, 
@@ -168,42 +140,17 @@ async function createInitialLinkTags(){
     console.log("link_tags created: ", linkTags);
     console.log("Finished creating link_tags!");
 
-    const lT = await getLinksBytag(tag1)
-    console.log("linkTags(1)",lT );
-
-    const erasedLink = await destroyLink(twitter.id)
-    console.log("link destroyed", erasedLink);
-
-    const test = await client.query(`
-      select * from links;
-    `);
-    console.log("test",test);
-    const test2 = await client.query(`
-      select * from link_tags;
-    `)
-    console.log("test",test2);
-
-    const l_t = await getAllLinksByUser({id:1, username:'albert'})
-    console.log("link_tags by ID:", l_t)
-
   } catch (error) {
     console.error("Error creating link_tags!!");
     throw error;
   }
 }
 
-
-
- 
- 
- 
-
 async function rebuildDB() {
   try {
     client.connect();
     await dropTables();
     await createTables();
-    await createInitialUsers();
     await createInitialTags();
     await createInitialLinks();
     await createInitialLinkTags();

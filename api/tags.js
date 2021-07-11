@@ -1,5 +1,4 @@
 const tagsRouter  = require('express').Router();
-const { verifyToken }   = require('../utils');   
 const{getAllTags, getTagsBYlink} = require('../db');
 
 
@@ -19,15 +18,12 @@ tagsRouter.get("/", async(req, res, next)=>{
 
 tagsRouter.post("/", async(req, res, next)=>{
     const {tagName} = req.body;
-    const headersAuth = req.headers.authorization;
 
     try{
-        if (!headersAuth) return res.status(403).send({ message: `Please login` });
-        const verifiedToken = verifyToken(headersAuth);
        
-        verifiedToken 
+        tagName 
         ? res.send(await createTag(tagName))
-        : res.status(403).send({ message: `Please login` });
+        : res.status(403).send({ message: `Please provide a Tag Name` });
 
     }catch(error){
         next(error);

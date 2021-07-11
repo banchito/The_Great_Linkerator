@@ -1,7 +1,6 @@
 const client = require("./client")
 
 const createTag = async(tagName) => {
-    console.log(tagName);
     try {
         const {rows} = await client.query(`
             INSERT INTO tags ("tagName")
@@ -47,7 +46,6 @@ const getTagsBYlink = async(linkId)=> {
         FROM link_tags lt
         JOIN tags t ON lt."tagId"       = t.id
         JOIN links l ON lt."linkId"     = l.id
-        JOIN users u ON l."creatorId"   = u.id
         WHERE l.id = $1;
         `,[linkId])
         console.log(rows)

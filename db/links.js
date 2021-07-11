@@ -1,14 +1,14 @@
 const client = require('./client')
 
-const createLink = async ({url, creatorId, comment, clickCount}) => {
+const createLink = async ({url, comment, clickCount}) => {
     console.log()
     try {
         const {rows: [link]} = await client.query(`
-        INSERT INTO links (url, "creatorId", comment, "clickCount")
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO links (url, comment, "clickCount")
+        VALUES ($1, $2, $3)
         ON CONFLICT (url) DO NOTHING
         RETURNING *;
-        `, [url, creatorId, comment, clickCount]);
+        `, [url, comment, clickCount]);
         return link;
     } catch (error) {
         console.log(error)
@@ -44,7 +44,7 @@ const getLinkById = async(id) => {
 const getLinksWithoutTags = async() => {
     try {
         const {rows} = await  client.query(`
-            SELECT id, url, "creatorId", "dateShared", comment, "clickCount" FROM links;
+            SELECT id, url, "dateShared", comment, "clickCount" FROM links;
         `)
         return rows
     } catch (error) {
@@ -95,11 +95,10 @@ const getLinksBytag = async(tag) => {
     const {id} = tag
     try {
         const {rows} = await client.query(`
-            SELECT l.id, l.url, l."creatorId", l."dateShared", l."clickCount", t.id as "tagId", t."tagName", u.username AS "creatorName", u.id
+            SELECT l.id, l.url, l."dateShared", l."clickCount", t.id as "tagId", t."tagName"
             FROM link_tags lt
             JOIN tags t ON lt."tagId"       = t.id
             JOIN links l ON lt."linkId"     = l.id
-            JOIN users u ON l."creatorId"   = u.id
             WHERE t.id = $1;
         `,[id]);
         rows.forEach((row)=>{
@@ -115,29 +114,6 @@ const getLinksBytag = async(tag) => {
     }
 }
 
-const getAllLinksByUser = async({id, username})=> {
-
-    try {
-        const {rows} = await client.query(`
-        SELECT l.id, l.url, l."creatorId", l."dateShared", l."clickCount", t.id as "tagId", t."tagName", u.username AS "creatorName", u.id
-        FROM link_tags lt
-        JOIN tags t ON lt."tagId"       = t.id
-        JOIN links l ON lt."linkId"     = l.id
-        JOIN users u ON l."creatorId"   = u.id
-        WHERE u.username = $1 AND u.id  = $2;
-        `,[username, id]);
-        rows.forEach((row)=>{
-            row.tags = [{id: row.tagId, tagName: row.tagName}]
-            delete row.tagId;
-            delete row.tagName
-        });
-        return rows;
-    } catch (error) {
-        console.error(error)
-        throw error
-    }
-}
-
 const getTagsforLink = async(linkId) =>{
     try {
         const {rows} = await client.query(`
@@ -145,7 +121,6 @@ const getTagsforLink = async(linkId) =>{
         FROM link_tags lt
         JOIN tags t ON lt."tagId"       = t.id
         JOIN links l ON lt."linkId"     = l.id
-        JOIN users u ON l."creatorId"   = u.id
         WHERE l.id = $1;`,[linkId]);
 
         return rows;
@@ -166,7 +141,6 @@ const getAllLinksAndTheirTags = async()=> {
             return {
                 ...link,
                 tags,
-
             }
         }))
 
@@ -185,4 +159,4 @@ const getAllLinksAndTheirTags = async()=> {
 }
 
 
- module.exports = { createLink, getLinksWithoutTags, getLinkById, getLinksBytag, getAllLinksByUser, updateLink, destroyLink, getAllLinks, getAllLinksAndTheirTags }
+ module.exports = { createLink, getLinksWithoutTags, getLinkById, getLinksBytag, updateLink, destroyLink, getAllLinks, getAllLinksAndTheirTags }
