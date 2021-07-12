@@ -8,6 +8,7 @@ const App = () => {
   const [featuredResult, setFeaturedResult]   = useState(null)
   const [linksList, setLinkList]          = useState([]);
   const [tagsList, setTagsList]           = useState([]);
+  const [linkTag, setLinkTag] =  useState('any');
 
 
   // useEffect(() => {
@@ -22,9 +23,9 @@ const App = () => {
 
   return (
     <div className="app">
-      <Search setTagsList={setTagsList} tagsList={tagsList} linksList={linksList} setLinkList={setLinkList} setSearchResults={setSearchResults}/>
+      <Search linkTag={linkTag} setLinkTag={setLinkTag} setTagsList={setTagsList} tagsList={tagsList} linksList={linksList} setLinkList={setLinkList} setSearchResults={setSearchResults}/>
       <Preview searchResult={searchResult} setSearchResults={setSearchResults} setFeaturedResult={setFeaturedResult}/>
-      <Feature setTagsList={setTagsList} linkList={linksList} setLinkList={setLinkList} featuredResult={featuredResult} setSearchResults={setSearchResults}/>
+      <Feature linkTag={linkTag} setTagsList={setTagsList} linkList={linksList} setLinkList={setLinkList} featuredResult={featuredResult} setSearchResults={setSearchResults}/>
     </div>
   );
 }

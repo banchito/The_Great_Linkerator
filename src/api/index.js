@@ -5,7 +5,6 @@ const BASE_URL = "http://localhost:5000";
 export async function fetchAllLinks() {
   try {
     const { data } = await axios.get(`${BASE_URL}/api/links`);
-    console.log(data);
     return data;
   } catch (error) {
     throw error;
@@ -15,7 +14,6 @@ export async function fetchAllLinks() {
 export const fetchAllTags = async() =>{
   try {
     const { data } = await axios.get(`${BASE_URL}/api/tags`)
-    console.log(data);
     return data
   } catch (error) {
     throw error
@@ -27,7 +25,6 @@ export const createTagFrontEnd = async(tagName) =>{
        const {data} = await axios.post(`${BASE_URL}/api/tags`,{
         tagName, 
       });
-      console.log(data)
       return data;
     }catch(error){
       throw error
@@ -40,7 +37,6 @@ export const createLinkFrontEnd = async(url, comment) => {
     const {data} = await axios.post(`${BASE_URL}/api/links`,{
       url, comment
     });
-    console.log("Data",data)
     return data;
   } catch (error) {
     throw error
@@ -52,7 +48,6 @@ export const addTagToLinkFrontEnd = async(linkId, tagId) =>{
       const {data} = await axios.post(`${BASE_URL}/api/links/${linkId}/tags`,{
         tagId
       });
-      console.log(data)
       return data;
     } catch (error) {
       throw error
@@ -60,16 +55,22 @@ export const addTagToLinkFrontEnd = async(linkId, tagId) =>{
 }
 
 export const addClickCountFrontEnd = async(linkId, url, comment, clickCount) => {
-    console.log("clickCount", clickCount)
     const clickCountInt = parseInt(clickCount++);
-    console.log("clickCountInt", clickCountInt)
     try {
       const {data} = await axios.patch(`${BASE_URL}/api/links/${linkId}`,{
         url, comment, clickCount
       })
-      console.log(data)
       return data;
     } catch (error) {
       throw error
     }
+}
+
+export const deleteLinkFrontEnd = async(linkId) =>{
+  try {
+    const {data} = await axios.delete(`${BASE_URL}/api/links/${linkId}`)
+    return data
+  } catch (error) {
+    throw error
+  }
 }

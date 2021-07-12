@@ -38,14 +38,12 @@ const ModalForm = ({show, handleChange, formButton, handleClose, handleSubmit}) 
 }
 
 
-const Search = ({setSearchResults, linksList, tagsList, setTagsList, setLinkList})=>{
-    const [linkTag, setLinkTag] =  useState('any');
+const Search = ({setSearchResults, linksList, tagsList, setTagsList, setLinkList, linkTag, setLinkTag})=>{
     const [show, setShow] = useState(false);
     const [newLink, setNewLink] = useState("")
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    console.log(newLink)
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -61,12 +59,14 @@ const Search = ({setSearchResults, linksList, tagsList, setTagsList, setLinkList
         try {
             const linkCreated = await createLinkFrontEnd(newLink)
             setNewLink("")
+            effect()
             console.log(linkCreated);
         } catch (error) {
             console.log(error);
         }
     }
-
+    
+    
     useEffect(()=>{
         Promise.all([fetchAllLinks(),fetchAllTags()])
         .then(([links, tags])=>{
@@ -75,7 +75,7 @@ const Search = ({setSearchResults, linksList, tagsList, setTagsList, setLinkList
         })
         .catch(error => {console.log(error);});
     }, [])
-
+        
     return <form id="search" onSubmit={ async (event) => {
        
         event.preventDefault();
@@ -95,7 +95,7 @@ const Search = ({setSearchResults, linksList, tagsList, setTagsList, setLinkList
         id="select-classification"
         value={linkTag}
         onChange={(event)=> setLinkTag(event.target.value)}>
-         <option value="Any">Any</option>
+        <option value="Any">Any</option>
         <option value="Links">Links</option>
         <option value="Tags">Tags</option>
         

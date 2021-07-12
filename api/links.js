@@ -52,12 +52,12 @@ linksRouter.patch("/:linkId", async(req, res, next) => {
 
 linksRouter.delete("/:linkId", async(req, res, next) => {
     const {linkId}  = req.params;
+    
     try{
-       
         const linkToDelete = await getLinkById(linkId);
-
+        const linkToDeleteAsInt = parseInt(linkToDelete.id);
         linkToDelete
-        ? res.send(await destroyLink(linkToDelete.id))
+        ? res.send(await destroyLink(linkToDeleteAsInt))
         : res.status(403).send({ message: `Link does not exist.` });
             
         
@@ -69,7 +69,6 @@ linksRouter.delete("/:linkId", async(req, res, next) => {
 linksRouter.post("/:linkId/tags", async(req, res, next) => {
     const {linkId} = req.params;
     const {tagId}  = req.body;
-    console.log("link route", linkId, tagId)
     try {
        
         const link_tag  = await addTagToLink({linkId, tagId})

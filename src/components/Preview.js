@@ -2,9 +2,7 @@ import React from 'react';
 import { DateTime } from 'luxon';
 import '../style.css';
 
-const Preview = ({searchResult, setSearchResults, setFeaturedResult}) => {
-
-    console.log(searchResult);
+const Preview = ({searchResult, setFeaturedResult}) => {
 
     const {linksList, tagsList} = searchResult;
     
