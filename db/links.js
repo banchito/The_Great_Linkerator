@@ -1,6 +1,7 @@
 const client = require('./client')
 
 const createLink = async ({url, comment, clickCount}) => {
+    console.log("route", url, comment, clickCount);
     console.log()
     try {
         const {rows: [link]} = await client.query(`
@@ -54,6 +55,7 @@ const getLinksWithoutTags = async() => {
 }
 
 const updateLink = async(fields = {}) =>{
+    console.log("db",fields)
     const idReference = fields.id
     delete fields.id
 

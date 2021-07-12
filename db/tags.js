@@ -1,6 +1,7 @@
 const client = require("./client")
 
 const createTag = async(tagName) => {
+    
     try {
         const {rows} = await client.query(`
             INSERT INTO tags ("tagName")
@@ -8,6 +9,7 @@ const createTag = async(tagName) => {
             ON CONFLICT ("tagName") DO NOTHING
             RETURNING *;
         `, [tagName])
+        console.log(rows)
         return rows
     } catch (error) {
         console.log(error)

@@ -1,5 +1,5 @@
 const linksRouter       = require('express').Router();
-const {getAllLinks, createLink, updateLink, getLinkById, destroyLink, getAllLinksAndTheirTags, addTagToLink} = require("../db");
+const {getAllLinks, createLink, updateLink, getLinkById, destroyLink, getAllLinksAndTheirTags, addTagToLink, createTag} = require("../db");
 
 linksRouter.use((req, res, next)=>{
     console.log("A request is being made to /links");
@@ -16,10 +16,12 @@ linksRouter.get("/", async(req ,res ,next) => {
 });
 
 linksRouter.post("/", async(req, res, next) => {
-    const {url, comment} = req.body;
-    try{
 
+     const {url:{url,comment}} = req.body;
     
+    console.log("route", req.body);
+    console.log("route", url, comment);
+    try{
 
      (url && comment)
      ? res.send(await createLink({ url, comment, clickCount:0 }))
@@ -32,7 +34,7 @@ linksRouter.post("/", async(req, res, next) => {
 
 linksRouter.patch("/:linkId", async(req, res, next) => {
     const { linkId }        = req.params;
-    const {url, comment}    = req.body;
+    const {url, comment, clickCount}    = req.body;
     
     try{
 
@@ -40,7 +42,7 @@ linksRouter.patch("/:linkId", async(req, res, next) => {
         
 
         linkToUpdate
-        ? res.send(await updateLink({id: linkId, url, comment}))
+        ? res.send(await updateLink({id: linkId, url, comment, clickCount}))
         : res.status(403).send({ message: `Link does not exist.` });
             
     }catch(error){
@@ -67,8 +69,10 @@ linksRouter.delete("/:linkId", async(req, res, next) => {
 linksRouter.post("/:linkId/tags", async(req, res, next) => {
     const {linkId} = req.params;
     const {tagId}  = req.body;
+    console.log("link route", linkId, tagId)
     try {
-        const link_tag = await addTagToLink({linkId, tagId})
+       
+        const link_tag  = await addTagToLink({linkId, tagId})
         res.send(link_tag);
     } catch (error) {
         next(error)

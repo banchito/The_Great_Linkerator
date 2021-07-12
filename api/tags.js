@@ -1,5 +1,5 @@
 const tagsRouter  = require('express').Router();
-const{getAllTags, getTagsBYlink} = require('../db');
+const{getAllTags, getTagsBYlink, createTag} = require('../db');
 
 
 tagsRouter.use((req, res, next)=>{
@@ -17,10 +17,9 @@ tagsRouter.get("/", async(req, res, next)=>{
 })
 
 tagsRouter.post("/", async(req, res, next)=>{
-    const {tagName} = req.body;
-
+    const {tagName:{tagName}} = req.body;
+    console.log("req.body",tagName);
     try{
-       
         tagName 
         ? res.send(await createTag(tagName))
         : res.status(403).send({ message: `Please provide a Tag Name` });

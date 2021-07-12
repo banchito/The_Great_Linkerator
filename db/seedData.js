@@ -55,13 +55,13 @@ async function createInitialTags() {
   try {
     console.log("Starting to create tags...");
     const tagsToCreate = [
-       "social",
-       "sport",
-       "search",
-       "knowledge",
-       "tool",
-       "personal",
-       "hobbie",
+     "social",
+     "sport",
+     "search",
+     "knowledge",
+     "tool",
+     "personal",
+     "hobbie",
     ];
     const tags = await Promise.all(tagsToCreate.map(createTag));
     console.log("tags created:", tags);
