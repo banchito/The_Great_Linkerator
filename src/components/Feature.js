@@ -64,7 +64,6 @@ const Feature = ({featuredResult, setTagsList, setLinkList, linkList, linkTag}) 
 
     const handleDelete = async()=>{
         try {
-            console.log(featuredResult.id)
             await deleteLinkFrontEnd(featuredResult.id)
         } catch (error) {
             console.log(error);

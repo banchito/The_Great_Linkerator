@@ -5,7 +5,8 @@ const cors        = require('cors');
 const client      = require('./db/client');
 const apiRouter   = require('./api')
 
-const PORT    = (process.env.PORT || 5000);
+//const PORT    = (process.env.PORT || 5000);
+const { PORT = 3000 } = process.env
 const server  = express();
 
 server.use(express.json());
