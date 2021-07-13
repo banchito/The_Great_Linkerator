@@ -6,7 +6,7 @@ const client      = require('./db/client');
 const apiRouter   = require('./api')
 
 //const PORT    = (process.env.PORT || 5000);
-const { PORT = 5000 } = process.env
+const PORT = process.env.PORT || 5000;
 const server  = express();
 
 server.use(express.json());
@@ -18,14 +18,14 @@ server.use((req, res, next)=>{
   next()
 })
 
-server.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
 const path = require("path");
 server.use(express.static(path.join(__dirname, "build")));
 
 server.use('/api', apiRouter);
+
+server.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 const startServer = async () => {
   await client.connect();
