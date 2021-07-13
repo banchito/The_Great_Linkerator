@@ -4,7 +4,7 @@ const BASE_URL = "http://localhost:5000";
 
 export async function fetchAllLinks() {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/links`);
+    const { data } = await axios.get(`/api/links`);
     return data;
   } catch (error) {
     throw error;
@@ -13,7 +13,7 @@ export async function fetchAllLinks() {
 
 export const fetchAllTags = async() =>{
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/tags`)
+    const { data } = await axios.get(`/api/tags`)
     return data
   } catch (error) {
     throw error
@@ -22,7 +22,7 @@ export const fetchAllTags = async() =>{
 
 export const createTagFrontEnd = async(tagName) =>{
     try{
-       const {data} = await axios.post(`${BASE_URL}/api/tags`,{
+       const {data} = await axios.post(`/api/tags`,{
         tagName, 
       });
       return data;
@@ -34,7 +34,7 @@ export const createTagFrontEnd = async(tagName) =>{
 export const createLinkFrontEnd = async(url, comment) => {
   console.log(url, comment);
   try {
-    const {data} = await axios.post(`${BASE_URL}/api/links`,{
+    const {data} = await axios.post(`/api/links`,{
       url, comment
     });
     return data;
@@ -45,7 +45,7 @@ export const createLinkFrontEnd = async(url, comment) => {
 
 export const addTagToLinkFrontEnd = async(linkId, tagId) =>{
     try {
-      const {data} = await axios.post(`${BASE_URL}/api/links/${linkId}/tags`,{
+      const {data} = await axios.post(`/api/links/${linkId}/tags`,{
         tagId
       });
       return data;
@@ -57,7 +57,7 @@ export const addTagToLinkFrontEnd = async(linkId, tagId) =>{
 export const addClickCountFrontEnd = async(linkId, url, comment, clickCount) => {
     const clickCountInt = parseInt(clickCount++);
     try {
-      const {data} = await axios.patch(`${BASE_URL}/api/links/${linkId}`,{
+      const {data} = await axios.patch(`/api/links/${linkId}`,{
         url, comment, clickCount
       })
       return data;
@@ -68,7 +68,7 @@ export const addClickCountFrontEnd = async(linkId, url, comment, clickCount) => 
 
 export const deleteLinkFrontEnd = async(linkId) =>{
   try {
-    const {data} = await axios.delete(`${BASE_URL}/api/links/${linkId}`)
+    const {data} = await axios.delete(`/api/links/${linkId}`)
     return data
   } catch (error) {
     throw error
